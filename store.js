@@ -11,6 +11,7 @@
 //
 // A: LocalServerStore — quiz/server.py + SQLite (이 PC)
 // B: ArtifactStore    — claude.ai 아티팩트의 db(개인 전용 경로) + 이미지 스프라이트
+// D: BrowserStore     — 정적 웹사이트(GitHub Pages), 기록은 브라우저 IndexedDB
 
 const QUEUE_KEY = "quiz.pendingAttempts";
 
