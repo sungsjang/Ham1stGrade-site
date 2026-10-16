@@ -1,5 +1,5 @@
-// 오프라인 사용을 위한 서비스 워커 (빌드: 20261017T071314)
-const CACHE = "quiz-20261017T071314";
+// 오프라인 사용을 위한 서비스 워커 (빌드: 20261017T081834)
+const CACHE = "quiz-20261017T081834";
 const SHELL = ["./", "index.html", "style.css", "app.js", "srs.js", "stats.js", "store.js", "bank.json", "manifest.webmanifest", "icon-192.png"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
