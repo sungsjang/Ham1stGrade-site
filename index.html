@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>무선 1급 기출 퀴즈</title>
+<meta name="description" content="1급 아마추어무선기사 기출 1,439문항 간격반복 퀴즈">
+<meta name="theme-color" content="#2a78d6">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="무선1급">
+<script>window.QUIZ_STORE = "browser";</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#/">📻 1급 기출 퀴즈</a>
+  <nav>
+    <a href="#/" data-nav="home">홈</a>
+    <a href="#/study/daily" data-nav="study">오늘의 학습</a>
+    <a href="#/wrongnote" data-nav="wrongnote">오답노트</a>
+    <a href="#/practice" data-nav="practice">연습</a>
+    <a href="#/exam" data-nav="exam">모의고사</a>
+    <a href="#/stats" data-nav="stats">통계</a>
+    <a href="#/settings" data-nav="settings">설정</a>
+  </nav>
+  <span id="sync" class="sync" title="저장 상태"></span>
+</header>
+<main id="app"><p class="muted">불러오는 중…</p></main>
+<div id="tip" class="tip" hidden></div>
+<script type="module" src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
