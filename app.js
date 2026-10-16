@@ -129,7 +129,7 @@ function questionBlock(q, showText) {
   const grp = S.gmap.get(q.gid) || [];
   const flags = [];
   if (q.uncertain) flags.push(`<span class="badge warn" title="복수정답·원문 오류 등으로 판단 보류">⚠ 확인필요</span>`);
-  if (q.verdict === "불일치") flags.push(`<span class="badge bad" title="정리본 표기정답이 틀렸다고 판단해 검증정답으로 채점">표기정답 수정됨</span>`);
+  if (q.verdict === "불일치") flags.push(`<span class="badge bad" title="표기정답이 틀렸다고 판단해 검증정답으로 채점">표기정답 수정됨</span>`);
   if (q.subject === "전파법규") flags.push(`<span class="badge" title="출제 당시 법령 기준">출제 당시 법령</span>`);
   return `
   <div class="qhead">
@@ -139,17 +139,24 @@ function questionBlock(q, showText) {
     <span class="badge" title="이 문제의 암기 단계">${BOX_LABEL[c?.box ?? 0]}</span>
     ${flags.join(" ")}
   </div>
-  <div class="qimg" id="qimg" title="클릭하면 확대">${store.imageHtml(q)}</div>
+  ${q.hideImg
+    // 원본 사진에 응시자 답 표시가 있는 문항: 텍스트로 풀고, 원본은 답을 확인한 뒤 '원본 보기'로만
+    ? `${q.figImg ? `<div class="qimg" id="qimg" title="클릭하면 확대">${store.imageHtml(q, q.figImg.replace(/\.png$/, ""))}</div>` : ""}
+  <div class="qtext"><p>${esc(q.question)}</p><ol>${q.choices.map((c) => `<li>${esc(c)}</li>`).join("")}</ol>
+    <p class="muted small">원본 사진에는 응시자의 답 표시가 있어 답을 확인한 뒤 '원본 보기'로 볼 수 있습니다.</p></div>`
+    : `<div class="qimg" id="qimg" title="클릭하면 확대">${store.imageHtml(q)}</div>
   <details class="qtext" ${showText ? "open" : ""}><summary>텍스트로 보기${q.fig ? " (그림·기호는 이미지 참고)" : ""}</summary>
     <p>${esc(q.question)}</p><ol>${q.choices.map((c) => `<li>${esc(c)}</li>`).join("")}</ol>
-  </details>`;
+  </details>`}`;
 }
 
 function infoBlock(q) {
   const grp = (S.gmap.get(q.gid) || []).filter((x) => x.id !== q.id);
   const n = S.notes.get(q.id) || { text: "", star: 0, flag: 0 };
   return `<div class="info">
-    ${q.printed !== q.answer ? `<p>정리본 표기정답: ${CIRC[q.printed] || "없음"} → 검증정답: <strong>${CIRC[q.answer]}</strong></p>` : ""}
+    ${q.printed == null && q.answer ? `<p>공식 정답이 없어 직접 풀어 정한 답입니다: <strong>${CIRC[q.answer]}</strong></p>`
+      : q.printed !== q.answer ? `<p>${q.src && q.src !== "정리본" ? `표기정답(${esc(q.src)})` : "정리본 표기정답"}: ${CIRC[q.printed] || "없음"} → 검증정답: <strong>${CIRC[q.answer] || "판단 보류"}</strong></p>` : ""}
+    ${q.hideImg ? `<details class="orig"><summary>원본 보기 (응시자 표시가 있는 사진)</summary><div class="qimg">${store.imageHtml(q)}</div></details>` : ""}
     ${q.memo ? `<p>💡 ${esc(q.memo)}</p>` : ""}
     ${q.hint ? `<p>📝 원문 힌트: ${esc(q.hint)}</p>` : ""}
     ${q.history ? `<p>기출이력: ${esc(q.history)}</p>` : ""}
@@ -313,7 +320,7 @@ function renderHome() {
     <div class="kpi"><div class="v">${groups.filter((g) => card(g)?.box === 6).length}</div><div class="l">암기완료</div></div>
   </div>
   <div class="card" style="margin-top:16px"><h2>과목별 진도</h2><div id="mini"></div>
-    <p class="small muted">같은 문제가 여러 회차에 나온 것은 하나의 묶음으로 셉니다(1,439문항 → ${S.gmap.size}묶음). <a href="#/stats">자세한 통계 →</a></p></div>`;
+    <p class="small muted">같은 문제가 여러 회차에 나온 것은 하나의 묶음으로 셉니다(${S.qmap.size.toLocaleString()}문항 → ${S.gmap.size}묶음). <a href="#/stats">자세한 통계 →</a></p></div>`;
   renderMiniProgress(document.getElementById("mini"), ctx());
 }
 

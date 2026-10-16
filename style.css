@@ -150,3 +150,8 @@ svg text { fill: var(--text-2); font-size: 11px; }
   .choices button { font-size: 1.2rem; padding: 12px 0; }
   .subjrow { grid-template-columns: 70px 1fr 56px; }
 }
+
+/* 원본 사진(응시자 표시 있음)은 답을 확인한 뒤에만 */
+details.orig { margin: 8px 0; }
+details.orig summary { cursor: pointer; color: var(--muted, #666); }
+details.orig .qimg { margin-top: 6px; }

@@ -5,7 +5,7 @@
 //   addAttempts(list)     → 풀이 기록 추가 (uid 기준 중복 무시, 실패해도 큐에 남아 다음에 다시 보냄)
 //   saveNote(note) · saveSettings(obj) · saveExam(exam) · importDump(dump)
 //   exportUrl()           → 백업 다운로드 주소 (없으면 null → downloadBackup() 사용)
-//   imageHtml(q)          → 문제 이미지 HTML
+//   imageHtml(q, key)     → 문제 이미지 HTML (key: 이미지 이름, 기본 q.id. 그림만 자른 것은 '<id>_fig')
 //   pending()             → 아직 저장 못 한 기록 수
 //   useHash · whereText · failHint
 //
@@ -71,7 +71,7 @@ export class LocalServerStore extends QueuedStore {
     this.failHint = "quiz/server.py가 실행 중인지 확인하세요.";
   }
   async init() {}
-  imageHtml(q) { return `<img src="${this.base}/images/${q.id}.png?v=${this.ver || ""}" alt="${escAttr(q.question)}">`; }
+  imageHtml(q, key = q.id) { return `<img src="${this.base}/images/${key}.png?v=${this.ver || ""}" alt="${escAttr(q.question)}">`; }
   async loadBank() { const b = await call(`${this.base}/api/bank`); this.ver = b.built; return b; }
   async loadAll() { await this.flush(); return call(`${this.base}/api/all`); }
   sendAttempts(q) { return call(`${this.base}/api/attempts`, { attempts: q }); }
@@ -120,8 +120,8 @@ export class ArtifactStore extends QueuedStore {
   // 같은 문서에 대한 쓰기는 한 번에 하나씩 (db 규칙)
   serial(fn) { this._write = this._write.then(fn, fn); return this._write; }
 
-  imageHtml(q) {
-    const s = this.sprites?.[q.id];
+  imageHtml(q, key = q.id) {
+    const s = this.sprites?.[key];
     if (!s) return `<div class="muted">이미지 없음</div>`;
     const [sheet, y, w, h, sw, sh] = s;
     // 세로로 쌓은 스프라이트에서 한 문항만 보이게: 폭 기준 백분율로 위치 계산
@@ -271,7 +271,7 @@ export class BrowserStore extends QueuedStore {
     // 저장 공간을 브라우저가 임의로 지우지 않도록 요청 (지원하는 브라우저만)
     try { if (navigator.storage?.persist) this.persisted = await navigator.storage.persist(); } catch { /* 무시 */ }
   }
-  imageHtml(q) { return `<img src="img/${q.id}.png?v=${this.ver || ""}" alt="${escAttr(q.question)}" loading="lazy">`; }
+  imageHtml(q, key = q.id) { return `<img src="img/${key}.png?v=${this.ver || ""}" alt="${escAttr(q.question)}" loading="lazy">`; }
   async loadBank() { const b = await fetch("bank.json").then((r) => r.json()); this.ver = b.built; return b; }
   async loadAll() {
     await this.flush();
